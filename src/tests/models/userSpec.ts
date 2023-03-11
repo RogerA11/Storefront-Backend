@@ -38,8 +38,8 @@ describe('User Model', () => {
         
         it('should return the correct user with a specific id', async () => {
             const user: User = {
-              firstName: 'Jack',
-              lastName: 'Black',
+              firstname: 'Jack',
+              lastname: 'Black',
               password: 'randomPassword'
             };
 
@@ -52,9 +52,10 @@ describe('User Model', () => {
             const result: User = await store.show(1);
             expect(result).toEqual({
                 id: 1,
-                firstName: 'Jack',
-                lastName: 'Black', 
-                password: hash});
+                firstname: 'Jack',
+                lastname: 'Black', 
+                password: jasmine.any(String)});
+            expect(bcrypt.compareSync(user.password + pepper, result.password)).toBe(true);
             });
 
     describe('Create method', () => {
@@ -74,26 +75,29 @@ describe('User Model', () => {
             await conn.query('DELETE FROM users');
             conn.release();
         });
-        
+
         it('should create a user using the create method', async () => {
             const user: User = {
-              firstName: 'James',
-              lastName: 'Bond',
+              firstname: 'James',
+              lastname: 'Bond',
               password: 'Double0h7'
             };
-
+          
+            const result: User = await store.create(user);
             const hash: string = bcrypt.hashSync(
                 user.password + pepper, 
                 parseInt(saltRounds!)
               );
-
-            const result: User = await store.create(user);
+          
+            // Verify that the user object returned by create() contains the expected values
             expect(result).toEqual({
               id: 1,
-              firstName: 'James',
-              lastName: 'Bond',
-              password: hash
+              firstname: 'James',
+              lastname: 'Bond',
+              password: jasmine.any(String) // The actual hash value will vary each time
             });
-        });
+             // Verify that the stored password hash matches the expected hash
+            expect(bcrypt.compareSync(user.password + pepper, result.password)).toBe(true);
+          });
     })});
 });

@@ -1,24 +1,25 @@
 // @ts-ignore
 import Client from '../database'
+import { Pool, PoolClient, QueryResult } from 'pg';
 
 export type Order = {
-    id?: string;
-    product_id: string;
-    quantity: number;
-    user_id: string;
-    order_status: number;
+    id?: number;
+    product_id: number;
+    product_qty: number;
+    user_id: number;
+    order_status: string;
   }
   
   // crud functionality  
   export class OrderStore { // this class is the representation of the db - postgres ambassador
     // model method requests 
-    async show(user_id: string): Promise<Order> {
+    async show(user_id: number): Promise<Order> {
         try {
-            const sql = 'SELECT * FROM orders WHERE user_id=($1)'
+            const sql: string = 'SELECT * FROM orders WHERE user_id=($1)'
             // @ts-ignore
-            const conn = await Client.connect()
+            const conn: PoolClient = await Client.connect()
     
-            const result = await conn.query(sql, [user_id])
+            const result: QueryResult = await conn.query(sql, [user_id])
     
             conn.release()
     
@@ -27,4 +28,21 @@ export type Order = {
             throw new Error(`Could not get current order by ${user_id}. Error: ${err}`)
         }
     }
+
+    async create(order: Order): Promise<Order> {
+        try {
+          // @ts-ignore
+          const conn: PoolClient = await Client.connect()
+          const sql: string = 'INSERT INTO orders (product_id, product_qty, user_id, order_status) VALUES($1, $2, $3, $4) RETURNING *'
+    
+          const result: QueryResult = await conn.query(sql, [order.product_id, order.product_qty,
+                                                             order.user_id, order.order_status])
+          
+          conn.release()
+    
+          return result.rows[0]
+        } catch(err) {
+          throw new Error(`unable to create order (${order.id}): ${err}`)
+        } 
+      }
 };

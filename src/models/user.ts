@@ -7,8 +7,8 @@ const pepper = process.env.BCRYPT_PASSWORD
 
 export type User = {
   id?: number;
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   password: string;
 }
 
@@ -25,7 +25,7 @@ export class UserStore {
 
       return result.rows
     } catch (err) {
-      throw new Error(`unable get users: ${err}`)
+      throw new Error(`unable to get users: ${err}`)
     } 
   }
 
@@ -41,29 +41,28 @@ export class UserStore {
 
       return result.rows[0]
     } catch (err) {
-      throw new Error(`unable show user ${id}: ${err}`)
+      throw new Error(`unable to show user ${id}: ${err}`)
     }
   }
 
-  async create(u: User): Promise<User> {
+  async create(user: User): Promise<User> {
     try {
       // @ts-ignore
       const conn: PoolClient = await Client.connect()
-      const sql: string = 'INSERT INTO users (firstName, lastName, password) VALUES($1, $2, $3) RETURNING *'
+      const sql: string = 'INSERT INTO users (firstname, lastname, password) VALUES($1, $2, $3) RETURNING *'
 
       const hash: string = bcrypt.hashSync(
-        u.password + pepper, 
+        user.password + pepper, 
         parseInt(saltRounds!)
       );
 
-      const result: QueryResult = await conn.query(sql, [u.firstName, u.lastName, hash])
-      const user = result.rows[0]
-
+      const result: QueryResult = await conn.query(sql, [user.firstname, user.lastname, hash])
+      
       conn.release()
 
-      return user
+      return result.rows[0]
     } catch(err) {
-      throw new Error(`unable create user (${u.firstName}): ${err}`)
+      throw new Error(`unable to create user (${user.firstname}): ${err}`)
     } 
   }
 
@@ -80,7 +79,7 @@ export class UserStore {
 
       return product
     } catch(err) {
-      throw new Error(`unable delete user (${id}): ${err}`)
+      throw new Error(`unable to delete user (${id}): ${err}`)
     }
   }
 
