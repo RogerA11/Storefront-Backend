@@ -1,11 +1,12 @@
 import Client from '../database'
 import bcrypt from 'bcrypt'
+import { Pool, PoolClient, QueryResult } from 'pg';
 
 const saltRounds = process.env.SALT_ROUNDS
 const pepper = process.env.BCRYPT_PASSWORD
 
 export type User = {
-  id?: string;
+  id?: number;
   firstName: string;
   lastName: string;
   password: string;
@@ -15,10 +16,10 @@ export class UserStore {
   async index(): Promise<User[]> {
     try {
       //@ts-ignore
-      const conn = await Client.connect()
-      const sql = 'SELECT * FROM users'
+      const conn: PoolClient = await Client.connect()
+      const sql: string = 'SELECT * FROM users'
 
-      const result = await conn.query(sql)
+      const result: QueryResult = await conn.query(sql)
 
       conn.release()
 
@@ -28,13 +29,13 @@ export class UserStore {
     } 
   }
 
-  async show(id: string): Promise<User> {
+  async show(id: number): Promise<User> {
     try {
-      const sql = 'SELECT * FROM users WHERE id=($1)'
+      const sql: string = 'SELECT * FROM users WHERE id=($1)'
       //@ts-ignoreX$
-      const conn = await Client.connect()
+      const conn: PoolClient = await Client.connect()
 
-      const result = await conn.query(sql, [id])
+      const result: QueryResult = await conn.query(sql, [id])
 
       conn.release()
 
@@ -47,15 +48,15 @@ export class UserStore {
   async create(u: User): Promise<User> {
     try {
       // @ts-ignore
-      const conn = await Client.connect()
-      const sql = 'INSERT INTO users (firstName, lastName, password) VALUES($1, $2, $3) RETURNING *'
+      const conn: PoolClient = await Client.connect()
+      const sql: string = 'INSERT INTO users (firstName, lastName, password) VALUES($1, $2, $3) RETURNING *'
 
-      const hash = bcrypt.hashSync(
+      const hash: string = bcrypt.hashSync(
         u.password + pepper, 
         parseInt(saltRounds!)
       );
 
-      const result = await conn.query(sql, [u.firstName, hash])
+      const result: QueryResult = await conn.query(sql, [u.firstName, u.lastName, hash])
       const user = result.rows[0]
 
       conn.release()
@@ -68,10 +69,10 @@ export class UserStore {
 
   async delete(id: string): Promise<User> {
     try {
-      const conn = await Client.connect()
-      const sql = 'DELETE FROM users WHERE id=($1)'
+      const conn: PoolClient = await Client.connect()
+      const sql: string = 'DELETE FROM users WHERE id=($1)'
       
-      const result = await conn.query(sql, [id])
+      const result: QueryResult = await conn.query(sql, [id])
 
       const product = result.rows[0]
 
@@ -84,10 +85,10 @@ export class UserStore {
   }
 
   async authenticate(username: string, password: string): Promise<User | null> {
-    const conn = await Client.connect()
-    const sql = 'SELECT password_digest FROM users WHERE username=($1)'
+    const conn: PoolClient = await Client.connect()
+    const sql: string = 'SELECT password_digest FROM users WHERE username=($1)'
 
-    const result = await conn.query(sql, [username])
+    const result: QueryResult = await conn.query(sql, [username])
 
     console.log(password+pepper)
 

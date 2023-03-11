@@ -1,12 +1,13 @@
 // @ts-ignore
+import { Pool, PoolClient, QueryResult } from 'pg';
 import Client from '../database'
 
 // assign typescript type
 export type Product = {
-    id?: string;
+    id?: number;
     name: string;
     price: number;
-    category?: string;
+    category: string;
   }
   
   // crud functionality  
@@ -16,13 +17,13 @@ export class ProductStore { // this class is the representation of the db - post
         try {
             // @ts-ignore
             // open a connection with the db to communicate with it
-            const conn = await Client.connect()
+            const conn: PoolClient = await Client.connect()
 
             // express a sql query from your node app to run on a postgres db 
-            const sql = 'SELECT * FROM products'
+            const sql: string = 'SELECT * FROM products'
             
             // store the result of the query on the db connection
-            const result = await conn.query(sql)
+            const result: QueryResult = await conn.query(sql)
   
             // close the connection
             conn.release()
@@ -34,13 +35,13 @@ export class ProductStore { // this class is the representation of the db - post
       }
     }
 
-    async show(id: string): Promise<Product> {
+    async show(id: number): Promise<Product> {
         try {
-            const sql = 'SELECT * FROM products WHERE id=($1)'
+            const sql: string = 'SELECT * FROM products WHERE id=($1)'
             // @ts-ignore
-            const conn = await Client.connect()
+            const conn: PoolClient = await Client.connect()
     
-            const result = await conn.query(sql, [id])
+            const result: QueryResult = await conn.query(sql, [id])
     
             conn.release()
     
@@ -52,11 +53,11 @@ export class ProductStore { // this class is the representation of the db - post
     
     async create(product: Product): Promise<Product> {
         try {
-            const sql = 'INSERT INTO products (name, price) VALUES($1, 1) RETURNING *'
+            const sql: string = 'INSERT INTO products (name, price, category) VALUES($1, $2, $3) RETURNING *'
             // @ts-ignore
-            const conn = await Client.connect()
+            const conn: PoolClient = await Client.connect()
     
-            const result_var = await conn.query(sql, [product.name, product.price])
+            const result_var: QueryResult = await conn.query(sql, [product.name, product.price, product.category])
     
             const result = result_var.rows[0]
     
