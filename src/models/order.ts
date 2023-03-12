@@ -1,12 +1,14 @@
 // @ts-ignore
 import Client from '../database'
 import { Pool, PoolClient, QueryResult } from 'pg';
+import { Product } from './product';
+import { User } from './user';
 
 export type Order = {
     id?: number;
-    product_id: number;
+    product_id: Product['id'];
     product_qty: number;
-    user_id: number;
+    user_id: User['id'];
     order_status: string;
   }
   
