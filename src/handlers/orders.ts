@@ -1,5 +1,6 @@
 import express, {Request, Response } from 'express';
 import { Order, OrderStore } from '../models/order';
+import jwt from 'jsonwebtoken';
 
 const orderStore = new OrderStore()
 
@@ -10,7 +11,6 @@ const show = async (_req: Request, res: Response) => {
 };
 
 const create = async (_req: Request, res: Response) => {
-    try { 
         const order: Order = {
             product_id: parseInt(_req.body.product_id),
             product_qty: _req.body.product_qty,
@@ -18,6 +18,15 @@ const create = async (_req: Request, res: Response) => {
             order_status: _req.body.order_status
         } 
     
+    try {
+        jwt.verify(_req.body.token, process.env.TOKEN_SECRET!)
+    }  catch (err) {
+        res.status(401)
+        res.json(`Invalid token ${err}`)
+        return
+        };
+    
+    try {
         const orderResult: Order = await orderStore.create(order)
         res.json(orderResult)
     } catch (err) {

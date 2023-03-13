@@ -115,7 +115,7 @@ describe('Order Model', () => {
             const productResult: Product = await productStore.create(product);
             const userResult: User = await userStore.create(user);
             const orderCreateResult: Order = await orderStore.create(order);
-            const orderShowResult: Order = await orderStore.show(order.user_id);
+            const orderShowResult: Order = await orderStore.show(order.user_id as number);
             
             // console.log(result);
             expect(orderShowResult).toEqual({

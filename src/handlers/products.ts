@@ -1,5 +1,6 @@
 import express, {Request, Response } from 'express';
 import { Product, ProductStore } from '../models/product';
+import jwt from 'jsonwebtoken';
 
 const store = new ProductStore()
 
@@ -14,19 +15,28 @@ const show = async (_req: Request, res: Response) => {
     res.json(productById)
 };
 
-const create = async (_req: Request, res: Response) => {
-    try { 
+const create = async (_req: Request, res: Response) => { 
         const product: Product = {
             name: _req.body.name,
             price: _req.body.price,
             category: _req.body.category
-        } 
+        }; 
+
+    try {
+        jwt.verify(_req.body.token, process.env.TOKEN_SECRET!)
+    }  catch (err) {
+        res.status(401)
+        res.json(`Invalid token ${err}`)
+        return
+        };
+
+    try {
         const productResult = await store.create(product)
         res.json(productResult)
     } catch (err) {
         res.status(400)
         res.json(err)
-    }
+    };
 };
 
 const products_routes = (app: express.Application) => {

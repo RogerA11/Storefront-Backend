@@ -13,7 +13,20 @@ describe('User Model', () => {
             expect(store.index).toBeDefined();
         });
 
-        it('index method should return a list of products', async () => {
+        beforeEach(async () => {
+            const conn: PoolClient = await Client.connect();
+            await conn.query('DELETE FROM users');
+            await conn.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
+            conn.release();
+        });
+    
+        afterEach(async () => {
+            const conn = await Client.connect();
+            await conn.query('DELETE FROM users');
+            conn.release();
+        });
+
+        it('index method should return a list of user', async () => {
             const result = await store.index();
             expect(result).toEqual([]);
         });
