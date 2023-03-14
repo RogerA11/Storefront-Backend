@@ -9,7 +9,7 @@ This Node.js-based e-commerce platform is built using a RESTful API and designed
 - [Environment Variables](#environment-variables)
 - [Database & Server](#database--server)
 - [Usage Documentation](#usage-documentation)
-- 
+- [Additional Notes](#additional-notes)
 
 ## Getting Started
 

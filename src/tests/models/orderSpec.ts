@@ -2,7 +2,7 @@ import { Order, OrderStore } from "../../models/order";
 import { Product, ProductStore } from "../../models/product";
 import { User, UserStore } from "../../models/user";
 import { Pool, PoolClient, QueryResult } from 'pg';
-import Client from "../../database";
+import client from "../../database";
 
 const orderStore = new OrderStore()
 const productStore = new ProductStore()
@@ -16,7 +16,7 @@ describe('Order Model', () => {
         });
 
         beforeEach(async () => {
-            const conn: PoolClient = await Client.connect();
+            const conn: PoolClient = await client.connect();
             await conn.query('DELETE FROM orders');
             await conn.query('DELETE FROM products');
             await conn.query('DELETE FROM users');
@@ -27,7 +27,7 @@ describe('Order Model', () => {
         });
     
         afterEach(async () => {
-            const conn = await Client.connect();
+            const conn = await client.connect();
             await conn.query('DELETE FROM orders');
             await conn.query('DELETE FROM products');
             await conn.query('DELETE FROM users');
@@ -48,8 +48,6 @@ describe('Order Model', () => {
               };
 
             const order: Order = {
-              product_id: 1,
-              product_qty: 3, 
               user_id: 1,
               order_status: 'active'
             };
@@ -61,8 +59,6 @@ describe('Order Model', () => {
             // console.log(result);
             expect(orderResult).toEqual({
               id: 1,
-              product_id: 1,
-              product_qty: 3,
               user_id: 1,
               order_status: 'active'
             });
@@ -74,7 +70,7 @@ describe('Order Model', () => {
         })
 
         beforeEach(async () => {
-            const conn: PoolClient = await Client.connect();
+            const conn: PoolClient = await client.connect();
             await conn.query('DELETE FROM orders');
             await conn.query('DELETE FROM products');
             await conn.query('DELETE FROM users');
@@ -85,7 +81,7 @@ describe('Order Model', () => {
         });
     
         afterEach(async () => {
-            const conn = await Client.connect();
+            const conn = await client.connect();
             await conn.query('DELETE FROM orders');
             await conn.query('DELETE FROM products');
             await conn.query('DELETE FROM users');
@@ -106,8 +102,6 @@ describe('Order Model', () => {
               };
 
             const order: Order = {
-              product_id: 1,
-              product_qty: 3, 
               user_id: 1,
               order_status: 'active'
             };
@@ -120,8 +114,6 @@ describe('Order Model', () => {
             // console.log(result);
             expect(orderShowResult).toEqual({
               id: 1,
-              product_id: 1,
-              product_qty: 3,
               user_id: 1,
               order_status: 'active'});
             });

@@ -12,8 +12,6 @@ const show = async (_req: Request, res: Response) => {
 
 const create = async (_req: Request, res: Response) => {
         const order: Order = {
-            product_id: parseInt(_req.body.product_id),
-            product_qty: _req.body.product_qty,
             user_id: parseInt(_req.body.user_id),
             order_status: _req.body.order_status
         } 
