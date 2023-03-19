@@ -26,6 +26,7 @@ POST ['/users/:User']
 - Current Order by user (args: user id)[token required]
 GET ['/orders/:id']
 - [OPTIONAL] Completed Orders by user (args: user id)[token required]
+GET ['/orders/:id/products']
 
 ## Data Shapes
 #### Product
@@ -34,7 +35,7 @@ GET ['/orders/:id']
 - price
 - [OPTIONAL] category
 
-Table: products (id:serial primary key, name:varchar not null, price:integer not null, category:varchar)
+Table: products (id: serial primary key, name: varchar not null, price: integer not null, category: varchar)
 
 #### User
 - id
@@ -42,14 +43,19 @@ Table: products (id:serial primary key, name:varchar not null, price:integer not
 - lastName
 - password
 
-Table: users (id:serial primary key, firstName:varchar not null, lastName:varchar not null, password:varchar not null)
+Table: users (id: serial primary key, firstName: varchar not null, lastName: varchar not null, password: varchar not null)
 
 #### Orders
 - id
-- id of each product in the order
-- quantity of each product in the order
 - user_id
-- status of order (active or complete)
+- order_status 
 
-Table: orders (id:serial primary key, product id:varchar not null, product qty:integer not null, user_id:varchar not null, order_status:varchar not null)
+Table: orders (id: serial primary key, user_id: varchar not null, order_status: varchar not null)
 
+#### OrderProducts
+- id
+- order_id
+- product_id
+- quantity 
+
+Table: order_products (id: serial primary key, order_id: bigint reference orders(id), product_id: bigint references products(id), quantity: integer)

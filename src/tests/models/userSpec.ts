@@ -1,6 +1,6 @@
 import { User, UserStore } from "../../models/user";
 import { Pool, PoolClient, QueryResult } from 'pg';
-import Client from "../../database";
+import client from "../../database";
 import bcrypt from 'bcrypt'
 
 const saltRounds = process.env.SALT_ROUNDS
@@ -14,14 +14,14 @@ describe('User Model', () => {
         });
 
         beforeEach(async () => {
-            const conn: PoolClient = await Client.connect();
+            const conn: PoolClient = await client.connect();
             await conn.query('DELETE FROM users');
             await conn.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
             conn.release();
         });
     
         afterEach(async () => {
-            const conn = await Client.connect();
+            const conn = await client.connect();
             await conn.query('DELETE FROM users');
             conn.release();
         });
@@ -37,14 +37,14 @@ describe('User Model', () => {
             expect(store.show).toBeDefined();
         });
         beforeEach(async () => {
-            const conn: PoolClient = await Client.connect();
+            const conn: PoolClient = await client.connect();
             await conn.query('DELETE FROM users');
             await conn.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
             conn.release();
         });
     
         afterEach(async () => {
-            const conn = await Client.connect();
+            const conn = await client.connect();
             await conn.query('DELETE FROM users');
             conn.release();
         });
@@ -77,14 +77,14 @@ describe('User Model', () => {
         });
 
         beforeEach(async () => {
-            const conn: PoolClient = await Client.connect();
+            const conn: PoolClient = await client.connect();
             await conn.query('DELETE FROM users');
             await conn.query('ALTER SEQUENCE users_id_seq RESTART WITH 1');
             conn.release();
         });
     
         afterEach(async () => {
-            const conn = await Client.connect();
+            const conn = await client.connect();
             await conn.query('DELETE FROM users');
             conn.release();
         });

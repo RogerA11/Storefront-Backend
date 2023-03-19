@@ -1,6 +1,6 @@
 // @ts-ignore
 import { Pool, PoolClient, QueryResult } from 'pg';
-import Client from '../database'
+import client from '../database'
 
 // assign typescript type
 export type Product = {
@@ -17,7 +17,7 @@ export class ProductStore { // this class is the representation of the db - post
         try {
             // @ts-ignore
             // open a connection with the db to communicate with it
-            const conn: PoolClient = await Client.connect()
+            const conn: PoolClient = await client.connect()
 
             // express a sql query from your node app to run on a postgres db 
             const sql: string = 'SELECT * FROM products'
@@ -39,7 +39,7 @@ export class ProductStore { // this class is the representation of the db - post
         try {
             const sql: string = 'SELECT * FROM products WHERE id=($1)'
             // @ts-ignore
-            const conn: PoolClient = await Client.connect()
+            const conn: PoolClient = await client.connect()
     
             const result: QueryResult = await conn.query(sql, [id])
     
@@ -55,7 +55,7 @@ export class ProductStore { // this class is the representation of the db - post
         try {
             const sql: string = 'INSERT INTO products (name, price, category) VALUES($1, $2, $3) RETURNING *'
             // @ts-ignore
-            const conn: PoolClient = await Client.connect()
+            const conn: PoolClient = await client.connect()
     
             const result_var: QueryResult = await conn.query(sql, [product.name, product.price, product.category])
     

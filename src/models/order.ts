@@ -6,16 +6,17 @@ import { User } from './user';
 
 export type Order = {
     id?: number;
-    user_id: User['id'];
+    user_id: number;
     order_status: string;
   }
   
 export type OrderProduct = {
     id?: number;
-    order_id: Order['id'];
-    product_id: Product['id'];
+    order_id: number;
+    product_id: number;
     quantity: number;
   }
+  
   // crud functionality  
   export class OrderStore { // this class is the representation of the db - postgres ambassador
     // model method requests 
@@ -47,25 +48,37 @@ export type OrderProduct = {
     
           return result.rows[0]
         } catch(err) {
-          throw new Error(`unable to create order (${order.id}): ${err}`)
+          throw new Error(`unable to create order (${order.user_id}): ${err}`)
         } 
       }
     
-    async addProduct(order_id: string,  product_id: string, quantity: number): Promise<OrderProduct> {
+    async addProduct(order_id: number, product_id: number, quantity: number): Promise<OrderProduct> {
         try {
-          const sql = 'INSERT INTO order_products (order_id, product_id, quantity) VALUES($1, $2, $3) RETURNING *'
-          //@ts-ignore
-          const conn = await Client.connect()
+            // verify that the order_id value exists in the orders table
+            const conn = await Client.connect()
+            const orderExists = await conn.query('SELECT * FROM orders WHERE id = $1', [order_id]);
+            if (orderExists.rowCount === 0) {
+                throw new Error(`Could not add product ${product_id} to order ${order_id}: order does not exist`);
+            }
     
-          const result = await conn.query(sql, [order_id, product_id, quantity ])
+            const sql = 'INSERT INTO order_products (order_id, product_id, quantity) VALUES($1, $2, $3) RETURNING *';
     
-          const order = result.rows[0]
+            const result = await conn.query(sql, [order_id, product_id, quantity]);
     
-          conn.release()
+            const orderProduct = result.rows[0];
     
-          return order
+            conn.release();
+    
+            return orderProduct;
         } catch (err) {
-            throw new Error(`Could not add product ${product_id} to order ${order_id}: ${err}`)
+            throw new Error(`Could not add product ${product_id} to order ${order_id}: ${err}`);
         }
-      }
+    }
 };
+
+
+
+
+
+
+
